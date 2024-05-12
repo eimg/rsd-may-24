@@ -6,7 +6,7 @@ export default function Item({ item, remove, toggle }) {
 			) : (
 				<button onClick={() => toggle(item.id)}>Done</button>
 			)}
-            
+
 			{item.name}
 			<button onClick={() => remove(item.id)}>Del</button>
 		</li>
