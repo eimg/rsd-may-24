@@ -1,5 +1,18 @@
 import { useRef, useState } from "react";
 
+import {
+    AppBar,
+    Toolbar,
+    Box,
+    IconButton,
+    Typography,
+    List,
+} from "@mui/material";
+
+import {
+    List as ListIcon
+} from "@mui/icons-material";
+
 import Item from "./Item";
 
 export default function App() {
@@ -30,55 +43,63 @@ export default function App() {
     }
 
     return (
-		<div>
-			<h1>Todo ({ data.filter(item => !item.done).length })</h1>
-			<form
-				onSubmit={e => {
-					e.preventDefault();
+		<Box>
+			<AppBar position="static">
+				<Toolbar>
+					<ListIcon sx={{ mr: 2 }} />
+					<Typography variant="h6">Todo</Typography>
+				</Toolbar>
+			</AppBar>
 
-					const name = inputRef.current.value;
-					if (!name) return false;
+			<Box sx={{ mx: 'auto', maxWidth: "md", mt: 4 }}>
+				<form
+					onSubmit={e => {
+						e.preventDefault();
 
-					add(name);
+						const name = inputRef.current.value;
+						if (!name) return false;
 
-					inputRef.current.value = "";
-					inputRef.current.focus();
-				}}>
-				<input
-					type="text"
-					ref={inputRef}
-				/>
-				<button>Add</button>
-			</form>
-			<ul>
-				{data
-					.filter(item => !item.done)
-					.map(item => {
-						return (
-							<Item
-								key={item.id}
-								item={item}
-								remove={remove}
-                                toggle={toggle}
-							/>
-						);
-					})}
-			</ul>
-			<hr />
-			<ul>
-				{data
-					.filter(item => item.done)
-					.map(item => {
-						return (
-							<Item
-								key={item.id}
-								item={item}
-								remove={remove}
-                                toggle={toggle}
-							/>
-						);
-					})}
-			</ul>
-		</div>
+						add(name);
+
+						inputRef.current.value = "";
+						inputRef.current.focus();
+					}}>
+					<input
+						type="text"
+						ref={inputRef}
+					/>
+					<button>Add</button>
+				</form>
+				<List>
+					{data
+						.filter(item => !item.done)
+						.map(item => {
+							return (
+								<Item
+									key={item.id}
+									item={item}
+									remove={remove}
+									toggle={toggle}
+								/>
+							);
+						})}
+				</List>
+				<hr />
+				<List>
+					{data
+						.filter(item => item.done)
+						.map(item => {
+							return (
+								<Item
+									key={item.id}
+									item={item}
+									remove={remove}
+									toggle={toggle}
+								/>
+							);
+						})}
+				</List>
+			</Box>
+		</Box>
 	);
 }
