@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import {
 	Box,
@@ -6,6 +6,7 @@ import {
 	List,
 	OutlinedInput,
 	InputAdornment,
+	Alert,
 } from "@mui/material";
 
 import { Add as AddIcon } from "@mui/icons-material";
@@ -13,37 +14,76 @@ import { Add as AddIcon } from "@mui/icons-material";
 import Item from "./Item";
 import Header from "./Header";
 
+const api = "http://localhost:8888/tasks";
+
 export default function App() {
 	const inputRef = useRef();
 
-	const [data, setData] = useState([
-		{ id: 1, name: "Apple", done: true },
-		{ id: 2, name: "Orange", done: false },
-		{ id: 3, name: "Milk", done: false },
-	]);
+	const [data, setData] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [hasError, setHasError] = useState(false);
 
-	const remove = id => {
-		setData(data.filter(item => item.id !== id));
+	useEffect(() => {
+		(async () => {
+			try {
+				const res = await fetch(api);
+                if (res.ok) {
+                    setData(await res.json());
+					setIsLoading(false);
+                } else {
+					setHasError(true);  // response error
+				}
+			} catch (e) {
+				setHasError(true);      // timeout error
+			}
+		})();
+	}, []);
+
+	const remove = _id => {
+		setData(data.filter(item => item._id !== _id));
+        fetch(`${api}/${_id}`, { method: 'DELETE' });
 	};
 
-	const toggle = id => {
+	const toggle = _id => {
 		setData(
 			data.map(item => {
-				if (item.id === id) item.done = !item.done;
+				if (item._id === _id) item.done = !item.done;
 				return item;
 			})
 		);
+
+        fetch(`${api}/${_id}/toggle`, { method: 'PUT' });
 	};
 
-	const add = name => {
-		const id = data[data.length - 1].id + 1;
-		setData([...data, { id, name, done: false }]);
+	const add = async name => {
+        const res = await fetch(api, {
+            method: 'POST',
+            body: JSON.stringify({ name }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const item = await res.json();
+        setData([...data, item]);
 	};
 
 	return (
 		<Box>
-            <Header count={data.filter(item => !item.done).length} />
+			<Header count={data.filter(item => !item.done).length} />
 			<Box sx={{ mx: "auto", maxWidth: "md", mt: 4 }}>
+				{isLoading && (
+					<Box sx={{ mb: 2, textAlign: "center" }}>Loading...</Box>
+				)}
+
+				{hasError && (
+					<Alert
+						severity="error"
+						sx={{ mb: 2 }}>
+						Something went wrong
+					</Alert>
+				)}
+
 				<form
 					onSubmit={e => {
 						e.preventDefault();
@@ -60,7 +100,7 @@ export default function App() {
 						fullWidth
 						inputRef={inputRef}
 						endAdornment={
-							<InputAdornment>
+							<InputAdornment position="end">
 								<IconButton type="submit">
 									<AddIcon />
 								</IconButton>
@@ -74,7 +114,7 @@ export default function App() {
 						.map(item => {
 							return (
 								<Item
-									key={item.id}
+									key={item._id}
 									item={item}
 									remove={remove}
 									toggle={toggle}
@@ -89,7 +129,7 @@ export default function App() {
 						.map(item => {
 							return (
 								<Item
-									key={item.id}
+									key={item._id}
 									item={item}
 									remove={remove}
 									toggle={toggle}
