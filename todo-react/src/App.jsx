@@ -70,7 +70,6 @@ export default function App() {
 
 	return (
 		<Box>
-			<Header count={data.filter(item => !item.done).length} />
 			<Box sx={{ mx: "auto", maxWidth: "md", mt: 4 }}>
 				{isLoading && (
 					<Box sx={{ mb: 2, textAlign: "center" }}>Loading...</Box>
