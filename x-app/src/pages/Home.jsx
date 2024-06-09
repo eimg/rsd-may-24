@@ -1,7 +1,13 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+
+import PostCard from "../components/PostCard";
 
 export default function App() {
-    return <Box>
-        <Typography>Home</Typography>
-    </Box>
+	return (
+		<Box>
+			<PostCard />
+			<PostCard />
+			<PostCard />
+		</Box>
+	);
 }

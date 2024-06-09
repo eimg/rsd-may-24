@@ -10,7 +10,7 @@ export default function Template() {
 		<>
 			<Header count={0} />
 			<Drawer />
-			<Container maxWidth="md" sx={{ mt: 4 }}>
+			<Container maxWidth="sm" sx={{ mt: 4 }}>
 				<Outlet />
 			</Container>
 		</>
