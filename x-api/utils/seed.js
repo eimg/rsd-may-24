@@ -27,7 +27,7 @@ async function seedUsers() {
 
 		data.push({
 			name: `${firstName} ${lastName}`,
-			username: `${firstName}${lastName[0]}`,
+			username: `${firstName}${lastName[0]}`.toLowerCase(),
 			password: hash,
 			bio: "Account " + i,
 			created: new Date(),
