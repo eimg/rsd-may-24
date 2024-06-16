@@ -1,5 +1,10 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import {
+	createTheme,
+	ThemeProvider,
+	Snackbar,
+	CssBaseline,
+} from "@mui/material";
 
 const AppContext = createContext();
 
@@ -38,6 +43,7 @@ const router = createBrowserRouter([
 export default function ThemedApp() {
 	const [mode, setMode] = useState("dark");
 	const [drawer, setDrawer] = useState(false);
+	const [toast, setToast] = useState(null);
 	const [auth, setAuth] = useState(false);
 
 	const theme = useMemo(() => {
@@ -51,7 +57,24 @@ export default function ThemedApp() {
 	return (
 		<ThemeProvider theme={theme}>
 			<AppContext.Provider
-				value={{ mode, setMode, drawer, setDrawer, auth, setAuth }}>
+				value={{
+					mode,
+					setMode,
+					drawer,
+					setDrawer,
+					auth,
+					setAuth,
+					toast,
+					setToast,
+				}}>
+				<Snackbar
+					anchorOrigin={{ vertical: "top", horizontal: "right" }}
+					open={Boolean(toast)}
+					autoHideDuration={6000}
+					onClose={() => setToast(null)}
+					message={toast}
+				/>
+
 				<RouterProvider router={router} />
 				<CssBaseline />
 			</AppContext.Provider>

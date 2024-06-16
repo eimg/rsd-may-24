@@ -17,27 +17,26 @@ const db = mongo.db("x");
  * @param {express.NextFunction} next
  */
 const auth = (req, res, next) => {
-    const { authorization } = req.headers;
-    const token = authorization && authorization.split(" ")[1];
+	const { authorization } = req.headers;
+	const token = authorization && authorization.split(" ")[1];
 
-    if(!token) {
-        return res.status(403).json({ msg: "Unauthorize access" });
-    }
+	if (!token) {
+		return res.status(403).json({ msg: "Unauthorize access" });
+	}
 
-    jwt.verify(token, process.env.SECRET, (err, data) => {
-        if(err) {
-            return res.status(403).json(err);
-        }
+	jwt.verify(token, process.env.SECRET, (err, data) => {
+		if (err) {
+			return res.status(403).json(err);
+		}
 
-        res.locals.user = data;
-        next();
-    });
-}
+		res.locals.user = data;
+		next();
+	});
+};
 
 router.get("/verify", auth, (req, res) => {
-    const user = res.locals.user;
-
-    res.json(user);
+	const user = res.locals.user;
+	return res.json(user);
 });
 
 router.post("/login", async (req, res) => {
@@ -55,6 +54,27 @@ router.post("/login", async (req, res) => {
 	}
 
 	return res.status(401).json({ msg: "username or password incorrect" });
+});
+
+router.post("/register", async (req, res) => {
+	const { name, username, bio, password } = req.body;
+	if (!name || !username || !password) {
+		return res
+			.status(400)
+			.json({ msg: "name, username and password required" });
+	}
+
+	try {
+		const hash = await bcrypt.hash(password, 10);
+
+		const result = await db
+			.collection("users")
+			.insertOne({ name, username, bio, password: hash });
+
+		return res.json({ _id: result.insertedId, name, username, bio });
+	} catch (e) {
+		return res.status(500).json(e.message);
+	}
 });
 
 module.exports = { usersRouter: router, auth };

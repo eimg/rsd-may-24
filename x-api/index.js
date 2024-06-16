@@ -10,12 +10,11 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const { usersRouter, auth } = require("./routers/users");
+const { usersRouter } = require("./routers/users");
 app.use('/users', usersRouter);
 
-app.delete('/posts', auth, async (req, res) => {
-    res.json({msg: 'posts delete'});
-});
+const { postsRouter } = require("./routers/posts");
+app.use("/posts", postsRouter);
 
 app.listen(process.env.PORT, () => {
     console.log(`X Api running at ${process.env.PORT}...`);
