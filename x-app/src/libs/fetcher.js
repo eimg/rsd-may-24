@@ -54,3 +54,16 @@ export async function postRegister(data) {
 
     return res.ok;
 }
+
+export async function putLike(id) {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${api}/posts/like/${id}`, {
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    return res.ok;
+}

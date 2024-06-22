@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
 	createTheme,
 	ThemeProvider,
@@ -14,6 +14,7 @@ import Template from "./Template";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { fetchVerify } from "./libs/fetcher";
 
 export function useApp() {
 	return useContext(AppContext);
@@ -45,6 +46,10 @@ export default function ThemedApp() {
 	const [drawer, setDrawer] = useState(false);
 	const [toast, setToast] = useState(null);
 	const [auth, setAuth] = useState(false);
+
+    useEffect(() => {
+        fetchVerify().then(user => setAuth(user));
+    }, []);
 
 	const theme = useMemo(() => {
 		return createTheme({

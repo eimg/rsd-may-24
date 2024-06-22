@@ -13,13 +13,26 @@ import {
 import {
 	Comment as CommentIcon,
 	FavoriteBorder as LikeIcon,
+    Favorite as LikedIcon,
 } from "@mui/icons-material";
 
 import { green } from "@mui/material/colors";
 
 import { format } from "date-fns";
 
-export default function PostCard({ post }) {
+import { useApp } from "../ThemedApp";
+
+export default function PostCard({ post, like, unlike }) {
+    const { auth } = useApp();
+
+    const isLiked = () => {
+        if(!post.likes) return false;
+
+        return post.likes.find(like => {
+            return like._id === auth._id;
+        });
+    };
+
 	return (
 		<Card sx={{ mb: 2 }}>
 			<CardContent>
@@ -45,13 +58,20 @@ export default function PostCard({ post }) {
 						justifyContent: "space-around",
 					}}>
 					<ButtonGroup>
-						<IconButton>
-							<LikeIcon color="error" />
-						</IconButton>
+						{isLiked() ? (
+							<IconButton onClick={() => unlike(post._id)}>
+								<LikedIcon color="error" />
+							</IconButton>
+						) : (
+							<IconButton onClick={() => like(post._id)}>
+								<LikeIcon color="error" />
+							</IconButton>
+						)}
 						<Button variant="text">
 							{post.likes ? post.likes.length : 0}
 						</Button>
 					</ButtonGroup>
+
 					<ButtonGroup>
 						<IconButton>
 							<CommentIcon color="success" />
