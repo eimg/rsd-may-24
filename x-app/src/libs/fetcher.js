@@ -1,23 +1,23 @@
 const api = import.meta.env.VITE_API;
 
 export async function fetchVerify() {
-    const token = localStorage.getItem("token");
+	const token = localStorage.getItem("token");
 
-    const res = await fetch(`${api}/users/verify`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        }
-    });
+	const res = await fetch(`${api}/users/verify`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
 
-    if(res.ok) {
-        return await res.json();
-    }
+	if (res.ok) {
+		return await res.json();
+	}
 
-    return false;
+	return false;
 }
 
 export async function postLogin(username, password) {
-    const res = await fetch(`${api}/users/login`, {
+	const res = await fetch(`${api}/users/login`, {
 		method: "POST",
 		body: JSON.stringify({ username, password }),
 		headers: {
@@ -25,22 +25,22 @@ export async function postLogin(username, password) {
 		},
 	});
 
-    if(res.ok) {
-        const data = await res.json();
-        return data.token;
-    }
+	if (res.ok) {
+		const data = await res.json();
+		return data.token;
+	}
 
 	return false;
 }
 
 export async function getPosts() {
-    const res = await fetch(`${api}/posts`);
+	const res = await fetch(`${api}/posts`);
 
-    if(res.ok) {
-        return await res.json();
-    }
+	if (res.ok) {
+		return await res.json();
+	}
 
-    return false;
+	return false;
 }
 
 export async function postRegister(data) {
@@ -52,18 +52,37 @@ export async function postRegister(data) {
 		},
 	});
 
-    return res.ok;
+	return res.ok;
 }
 
 export async function putLike(id) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/posts/like/${id}`, {
+		method: "PUT",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return res.ok;
+}
+
+export async function putUnlike(id) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/posts/unlike/${id}`, {
+		method: "PUT",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return res.ok;
+}
+
+export async function fetchPost(id) {
     const token = localStorage.getItem("token");
-
-    const res = await fetch(`${api}/posts/like/${id}`, {
-        method: 'PUT',
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    return res.ok;
+    const res = await fetch(`${api}/posts/${id}`);
+    return await res.json();
 }

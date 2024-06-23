@@ -77,4 +77,215 @@ router.post("/register", async (req, res) => {
 	}
 });
 
+router.get("/followers/:id", async function (req, res) {
+	const { id } = req.params;
+
+	const user = await db.collection("users")
+		.aggregate([
+			{
+				$match: { _id: new ObjectId(id) },
+			},
+			{
+				$lookup: {
+					localField: "followers",
+					from: "users",
+					foreignField: "_id",
+					as: "followers",
+				},
+			},
+		])
+		.toArray();
+
+	res.json(user[0]);
+});
+
+router.get("/following/:id", async function (req, res) {
+	const { id } = req.params;
+
+	const user = await db.collection("users")
+		.aggregate([
+			{
+				$match: { _id: new ObjectId(id) },
+			},
+			{
+				$lookup: {
+					localField: "following",
+					from: "users",
+					foreignField: "_id",
+					as: "following",
+				},
+			},
+		])
+		.toArray();
+
+	res.json(user[0]);
+});
+
+router.get("/:id", async function (req, res) {
+	const { id } = req.params;
+
+	try {
+		const user = await db.collection("users").findOne({
+            _id: new ObjectId(id),
+        });
+
+		user.followers = user.followers || [];
+		user.following = user.following || [];
+
+		const data = await db
+			.collection("posts")
+			.aggregate([
+				{
+					$match: { owner: user._id },
+				},
+				{
+					$lookup: {
+						localField: "owner",
+						from: "users",
+						foreignField: "_id",
+						as: "owner",
+					},
+				},
+				{
+					$lookup: {
+						localField: "_id",
+						from: "posts",
+						foreignField: "origin",
+						as: "comments",
+					},
+				},
+				{
+					$unwind: "$owner",
+				},
+				{
+					$limit: 20,
+				},
+			])
+			.toArray();
+
+		return res.json({ posts: data, user });
+	} catch (err) {
+		return res.sendStatus(500);
+	}
+});
+
+router.put("/follow/:id", auth, async (req, res) => {
+	const targetUserId = req.params.id;
+	const authUserId = res.locals.user._id;
+
+	const targetUser = await db.collection("users").findOne({
+		_id: new ObjectId(targetUserId),
+	});
+
+	const authUser = await db.collection("users").findOne({
+		_id: new ObjectId(authUserId),
+	});
+
+	targetUser.followers = targetUser.followers || [];
+	authUser.following = authUser.following || [];
+
+	targetUser.followers.push(new ObjectId(authUserId));
+	authUser.following.push(new ObjectId(targetUserId));
+
+	try {
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(targetUserId) },
+			{
+				$set: { followers: targetUser.followers },
+			}
+		);
+
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(authUserId) },
+			{
+				$set: { following: authUser.following },
+			}
+		);
+
+		return res.json({
+			followers: targetUser.followers,
+			following: authUser.following,
+		});
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+});
+
+router.put("/unfollow/:id", auth, async (req, res) => {
+	const targetUserId = req.params.id;
+	const authUserId = res.locals.user._id;
+
+	const targetUser = await db.collection("users").findOne({
+		_id: new ObjectId(targetUserId),
+	});
+
+	const authUser = await db.collection("users").findOne({
+		_id: new ObjectId(authUserId),
+	});
+
+	targetUser.followers = targetUser.followers || [];
+	authUser.following = authUser.following || [];
+
+	targetUser.followers = targetUser.followers.filter(
+		userId => userId.toString() !== authUserId
+	);
+
+	authUser.following = authUser.following.filter(
+		userId => userId.toString() !== targetUserId
+	);
+
+	try {
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(targetUserId) },
+			{
+				$set: { followers: targetUser.followers },
+			}
+		);
+
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(authUserId) },
+			{
+				$set: { following: authUser.following },
+			}
+		);
+
+		return res.json({
+			followers: targetUser.followers,
+			following: authUser.following,
+		});
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+});
+
+router.get("/search", async (req, res) => {
+	let { q } = req.query;
+
+	try {
+		let result = await db.collection("users")
+			.aggregate([
+				{
+					$match: {
+						name: new RegExp(`.*${q}.*`, "i"),
+					},
+				},
+				{
+					$sort: { name: 1 },
+				},
+				{
+					$limit: 5,
+				},
+			])
+			.toArray();
+
+		if (result) {
+			return res.json(result);
+		}
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+
+	return res.status(404).json({ msg: "user not found" });
+});
+
 module.exports = { usersRouter: router, auth };

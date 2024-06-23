@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 
 import PostCard from "../components/PostCard";
 
-import { getPosts, putLike } from "../libs/fetcher";
+import { getPosts, putLike, putUnlike } from "../libs/fetcher";
 import { useEffect, useState } from "react";
 import { useApp } from "../ThemedApp";
 
@@ -33,6 +33,7 @@ export default function App() {
 		});
 
 		setPosts(result);
+        putUnlike(_id);
 	};
 
 	useEffect(() => {

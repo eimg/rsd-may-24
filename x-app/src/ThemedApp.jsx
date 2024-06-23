@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { fetchVerify } from "./libs/fetcher";
+import Likes from "./pages/Likes";
 
 export function useApp() {
 	return useContext(AppContext);
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
 			{
 				path: "/register",
 				element: <Register />,
+			},
+			{
+				path: "/likes/:id",
+				element: <Likes />,
 			},
 		],
 	},

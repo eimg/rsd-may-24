@@ -21,9 +21,12 @@ import { green } from "@mui/material/colors";
 import { format } from "date-fns";
 
 import { useApp } from "../ThemedApp";
+import { useNavigate } from "react-router-dom";
 
 export default function PostCard({ post, like, unlike }) {
     const { auth } = useApp();
+
+    const navigate = useNavigate();
 
     const isLiked = () => {
         if(!post.likes) return false;
@@ -67,7 +70,7 @@ export default function PostCard({ post, like, unlike }) {
 								<LikeIcon color="error" />
 							</IconButton>
 						)}
-						<Button variant="text">
+						<Button variant="text" onClick={() => navigate(`/likes/${post._id}`)}>
 							{post.likes ? post.likes.length : 0}
 						</Button>
 					</ButtonGroup>
