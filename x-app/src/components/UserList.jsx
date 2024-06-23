@@ -5,6 +5,8 @@ import {
 	ListItemText,
 	ListItemAvatar,
 	Avatar,
+	ListItemButton,
+	Button,
 } from "@mui/material";
 
 export default function UserList({ users }) {
@@ -13,13 +15,22 @@ export default function UserList({ users }) {
 			<List>
 				{users.map(user => {
 					return (
-						<ListItem key={user._id}>
+						<ListItem
+							key={user._id}
+							secondaryAction={
+								<Button
+									variant="outlined"
+									size="small">
+									Follow
+								</Button>
+							}>
 							<ListItemAvatar>
 								<Avatar />
 							</ListItemAvatar>
 							<ListItemText
 								primary={user.name}
 								secondary={`
+                                    ${user.bio} - 
                                     ${
 										user.followers
 											? user.followers.length

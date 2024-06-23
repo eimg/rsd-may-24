@@ -14,8 +14,12 @@ import Template from "./Template";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { fetchVerify } from "./libs/fetcher";
 import Likes from "./pages/Likes";
+import NotFound from "./pages/NotFound";
+import NewPost from "./pages/NewPost";
+import Comments from "./pages/Comments";
+
+import { fetchVerify } from "./libs/fetcher";
 
 export function useApp() {
 	return useContext(AppContext);
@@ -41,6 +45,14 @@ const router = createBrowserRouter([
 			{
 				path: "/likes/:id",
 				element: <Likes />,
+			},
+			{
+				path: "/comments/:id",
+				element: <Comments />,
+			},
+			{
+				path: "/new",
+				element: <NewPost />,
 			},
 		],
 	},

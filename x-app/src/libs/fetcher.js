@@ -82,7 +82,36 @@ export async function putUnlike(id) {
 }
 
 export async function fetchPost(id) {
-    const token = localStorage.getItem("token");
     const res = await fetch(`${api}/posts/${id}`);
     return await res.json();
+}
+
+export async function postPost(body) {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${api}/posts`, {
+        method: "POST",
+        body: JSON.stringify({ body }),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    return await res.json();
+}
+
+export async function postComment(body, origin) {
+    const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/posts/comment/${origin}`, {
+		method: "POST",
+		body: JSON.stringify({ body }),
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return await res.json();
 }

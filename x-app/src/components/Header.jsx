@@ -1,10 +1,12 @@
-import { AppBar, Toolbar, Typography, Badge, IconButton } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, Badge, IconButton } from "@mui/material";
 
 import {
 	Menu as MenuIcon,
 	LightMode as LightModeIcon,
 	DarkMode as DarkModeIcon,
 	ArrowBack as BackIcon,
+    Add as AddIcon,
+    Notifications as NotiIcon,
 } from "@mui/icons-material";
 
 import { useApp } from "../ThemedApp";
@@ -32,15 +34,31 @@ export default function Header() {
 
 				<Typography sx={{ ml: 2, flexGrow: 1 }}>Todo</Typography>
 
-				{mode === "dark" ? (
-					<IconButton onClick={() => setMode("light")}>
-						<LightModeIcon />
-					</IconButton>
-				) : (
-					<IconButton onClick={() => setMode("dark")}>
-						<DarkModeIcon />
-					</IconButton>
-				)}
+				<Box sx={{ display: "flex", gap: 1 }}>
+					<Link to="/new">
+						<IconButton>
+							<AddIcon />
+						</IconButton>
+					</Link>
+
+					<Link to="/notis">
+						<IconButton>
+							<Badge badgeContent={10} color="error">
+								<NotiIcon />
+							</Badge>
+						</IconButton>
+					</Link>
+
+					{mode === "dark" ? (
+						<IconButton onClick={() => setMode("light")}>
+							<LightModeIcon />
+						</IconButton>
+					) : (
+						<IconButton onClick={() => setMode("dark")}>
+							<DarkModeIcon />
+						</IconButton>
+					)}
+				</Box>
 			</Toolbar>
 		</AppBar>
 	);

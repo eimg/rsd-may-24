@@ -29,7 +29,7 @@ async function seedUsers() {
 			name: `${firstName} ${lastName}`,
 			username: `${firstName}${lastName[0]}`.toLowerCase(),
 			password: hash,
-			bio: faker.person.bio,
+			bio: faker.person.bio(),
 			created: new Date(),
 		});
 	}
@@ -39,7 +39,7 @@ async function seedUsers() {
 		name: "Alice",
 		username: "alice",
 		password: hash,
-		bio: faker.person.bio,
+		bio: faker.person.bio(),
 		created: new Date(),
 	});
 
