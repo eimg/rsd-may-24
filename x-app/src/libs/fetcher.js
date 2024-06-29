@@ -115,3 +115,87 @@ export async function postComment(body, origin) {
 
 	return await res.json();
 }
+
+export async function putFollow(id) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/users/follow/${id}`, {
+		method: "put",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return res.ok;
+}
+
+export async function putUnfollow(id) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/users/unfollow/${id}`, {
+		method: "put",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return res.ok;
+}
+
+export async function fetchFollowers(id) {
+	const res = await fetch(`${api}/users/followers/${id}`);
+	if (!res.ok) return [];
+
+	const user = await res.json();
+	return user.followers || [];
+}
+
+export async function fetchFollowing(id) {
+	const res = await fetch(`${api}/users/following/${id}`);
+	if (!res.ok) return [];
+
+	const user = await res.json();
+	return user.following || [];
+}
+
+export async function fetchUser(id) {
+	const res = await fetch(`${api}/users/${id}`);
+	if (!res.ok) return false;
+
+	return await res.json();
+}
+
+export async function fetchUploadPhoto(id, formData) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/users/photo/${id}`, {
+		method: "post",
+		body: formData,
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+	});
+
+	return res.ok;
+}
+
+export async function fetchUploadCover(id, formData) {
+	const token = localStorage.getItem("token");
+
+	const res = await fetch(`${api}/users/cover/${id}`, {
+		method: "post",
+		body: formData,
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return res.ok;
+}
+
+export async function fetchSearch(q) {
+	const res = await fetch(`${api}/users/profile/search?q=${q}`);
+	if (!res.ok) return false;
+
+	return await res.json();
+}

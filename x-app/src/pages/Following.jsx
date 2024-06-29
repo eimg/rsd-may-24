@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import UserList from "../components/UserList";
 
-import { fetchPost } from "../libs/fetcher";
+import { fetchFollowing } from "../libs/fetcher";
 import { useParams } from "react-router-dom";
 
 export default function () {
@@ -13,8 +13,8 @@ export default function () {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetchPost(id).then(data => {
-			setUsers(data.likes);
+		fetchFollowing(id).then(following => {
+			setUsers(following);
 			setLoading(false);
 		});
 	}, [id]);
@@ -24,7 +24,7 @@ export default function () {
 			<Typography
 				variant="h4"
 				sx={{ textAlign: "center", mb: 2 }}>
-				Likes
+				Following
 			</Typography>
 			{loading ? <Box>Loading...</Box> : <UserList users={users} />}
 		</Box>

@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
 	Box,
 	List,
@@ -5,9 +7,12 @@ import {
 	ListItemText,
 	ListItemAvatar,
 	Avatar,
-	ListItemButton,
 	Button,
 } from "@mui/material";
+
+import { useApp } from "../ThemedApp";
+
+import { putFollow, putUnfollow } from "../libs/fetcher";
 
 export default function UserList({ users }) {
 	return (
@@ -17,13 +22,7 @@ export default function UserList({ users }) {
 					return (
 						<ListItem
 							key={user._id}
-							secondaryAction={
-								<Button
-									variant="outlined"
-									size="small">
-									Follow
-								</Button>
-							}>
+							secondaryAction={<FollowButton user={user} />}>
 							<ListItemAvatar>
 								<Avatar />
 							</ListItemAvatar>
@@ -43,5 +42,40 @@ export default function UserList({ users }) {
 				})}
 			</List>
 		</Box>
+	);
+}
+
+export function FollowButton({ user }) {
+	const { auth, setAuth } = useApp();
+
+	const [followed, setFollowed] = useState(
+		auth.following && auth.following.includes(user._id)
+	);
+
+	return auth._id === user._id ? (
+		<></>
+	) : (
+		<Button
+			size="small"
+			edge="end"
+			variant={followed ? "outlined" : "contained"}
+			sx={{ borderRadius: 5 }}
+			onClick={() => {
+				if (followed) {
+					auth.following = auth.following.filter(
+						userId => userId !== user._id
+					);
+					setAuth({ ...auth });
+					putUnfollow(user._id);
+				} else {
+					auth.following.push(user._id);
+					setAuth({ ...auth });
+					putFollow(user._id);
+				}
+
+				setFollowed(!followed);
+			}}>
+			{followed ? "Followed" : "Follow"}
+		</Button>
 	);
 }

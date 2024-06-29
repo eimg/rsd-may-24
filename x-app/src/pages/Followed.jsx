@@ -8,7 +8,7 @@ import { useApp } from "../ThemedApp";
 import { grey } from "@mui/material/colors";
 import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+export default function Followed() {
 	const [posts, setPosts] = useState([]);
 	const { auth } = useApp();
 
@@ -61,13 +61,13 @@ export default function Home() {
 				}}>
 				<Button
 					size="small"
-					disabled>
+					onClick={() => navigate("/")}>
 					Latest
 				</Button>
 				<Typography sx={{ color: grey[500] }}>|</Typography>
 				<Button
 					size="small"
-					onClick={() => navigate("/followed")}>
+					disabled>
 					Followed
 				</Button>
 			</Box>

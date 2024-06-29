@@ -10,6 +10,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Avatar,
+    Typography,
 } from "@mui/material";
 import { grey, pink } from "@mui/material/colors";
 
@@ -23,13 +24,13 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-export default function TemporaryDrawer() {
+export default function AppDrawer() {
 	const { drawer, setDrawer, auth, setAuth } = useApp();
     const navigate = useNavigate();
 
 	const DrawerList = (
 		<Box
-			sx={{ width: 250 }}
+			sx={{ width: 300 }}
 			onClick={() => setDrawer(false)}>
 			<List>
 				<ListItem disablePadding>
@@ -45,7 +46,7 @@ export default function TemporaryDrawer() {
 				{auth && (
 					<>
 						<ListItem disablePadding>
-							<ListItemButton>
+							<ListItemButton onClick={() => navigate(`/profile/${auth._id}`)}>
 								<ListItemIcon>
 									<ProfileIcon />
 								</ListItemIcon>
@@ -99,17 +100,27 @@ export default function TemporaryDrawer() {
 						position: "relative",
 						mb: 8,
 					}}>
-					<Avatar
-						sx={{
-							position: "absolute",
-							bottom: -50,
-							left: 20,
-							width: 100,
-							height: 100,
-							background: pink[500],
-						}}>
-						A
-					</Avatar>
+					{auth && (
+						<Box
+							sx={{
+								position: "absolute",
+								bottom: -35,
+								left: 20,
+								display: "flex",
+								alignItems: "center",
+								gap: 1,
+							}}>
+							<Avatar
+								sx={{
+									width: 100,
+									height: 100,
+									background: pink[500],
+								}}>
+								{auth.name[0]}
+							</Avatar>
+							<Typography>{auth.name}</Typography>
+						</Box>
+					)}
 				</Box>
 
 				{DrawerList}

@@ -11,6 +11,9 @@ const { MongoClient, ObjectId } = require("mongodb");
 const mongo = new MongoClient(process.env.MONGO);
 const db = mongo.db("x");
 
+const multer = require("multer");
+const upload = multer({ dest: process.env.IMAGES_PATH });
+
 /**
  * @param {express.Request} req
  * @param {express.Response} res
@@ -163,7 +166,7 @@ router.get("/:id", async function (req, res) {
 			])
 			.toArray();
 
-		return res.json({ posts: data, user });
+		return res.json({ user, posts: data });
 	} catch (err) {
 		return res.sendStatus(500);
 	}
@@ -258,7 +261,7 @@ router.put("/unfollow/:id", auth, async (req, res) => {
 	}
 });
 
-router.get("/search", async (req, res) => {
+router.get("/profile/search", async (req, res) => {
 	let { q } = req.query;
 
 	try {
@@ -286,6 +289,42 @@ router.get("/search", async (req, res) => {
 	}
 
 	return res.status(404).json({ msg: "user not found" });
+});
+
+router.post("/photo/:id", upload.single("photo"), async (req, res) => {
+	const id = req.params.id;
+	const fileName = req.file.filename;
+
+	try {
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(id) },
+			{
+				$set: { photo: fileName },
+			}
+		);
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+
+	return res.json({ msg: "Photo updated" });
+});
+
+router.post("/cover/:id", upload.single("cover"), async (req, res) => {
+	const id = req.params.id;
+	const fileName = req.file.filename;
+
+	try {
+		await db.collection("users").updateOne(
+			{ _id: new ObjectId(id) },
+			{
+				$set: { cover: fileName },
+			}
+		);
+	} catch (e) {
+		return res.status(500).json({ msg: e.message });
+	}
+
+	return res.json({ msg: "Cover updated" });
 });
 
 module.exports = { usersRouter: router, auth };

@@ -181,7 +181,7 @@ async function getPost(id) {
 						from: "users",
 						localField: "likes",
 						foreignField: "_id",
-						as: "liked_users",
+						as: "likes",
 					},
 				},
 				{
@@ -205,6 +205,14 @@ async function getPost(id) {
 									from: "posts",
 									foreignField: "origin",
 									as: "comments",
+								},
+							},
+							{
+								$lookup: {
+									from: "users",
+									localField: "likes",
+									foreignField: "_id",
+									as: "likes",
 								},
 							},
 							{

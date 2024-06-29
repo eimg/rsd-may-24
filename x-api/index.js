@@ -16,6 +16,8 @@ app.use('/users', usersRouter);
 const { postsRouter } = require("./routers/posts");
 app.use("/posts", postsRouter);
 
+app.use("/images", express.static(process.env.IMAGES_PATH));
+
 app.listen(process.env.PORT, () => {
     console.log(`X Api running at ${process.env.PORT}...`);
 });

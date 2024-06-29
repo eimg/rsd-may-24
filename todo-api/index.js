@@ -15,7 +15,9 @@ app.use(cors());
 app.get("/tasks", async (req, res) => {
 	const data = await db.collection("tasks").find().toArray();
 
-	return res.json(data);
+	setTimeout(() => {
+        res.json(data);
+    }, 2000);
 });
 
 app.get("/tasks/:id", async (req, res) => {

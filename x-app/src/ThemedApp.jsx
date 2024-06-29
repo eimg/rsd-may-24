@@ -1,23 +1,36 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
 	createTheme,
-	ThemeProvider,
-	Snackbar,
 	CssBaseline,
+	Snackbar,
+	ThemeProvider,
 } from "@mui/material";
+
+import { 
+    createContext, 
+    useContext, 
+    useEffect, 
+    useMemo, 
+    useState, 
+} from "react";
 
 const AppContext = createContext();
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import Template from "./Template";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Likes from "./pages/Likes";
-import NotFound from "./pages/NotFound";
-import NewPost from "./pages/NewPost";
+import Edit from "./pages/Edit";
 import Comments from "./pages/Comments";
+import Home from "./pages/Home";
+import Likes from "./pages/Likes";
+import Login from "./pages/Login";
+import NewPost from "./pages/NewPost";
+import Profile from "./pages/Profile";
+import Register from "./pages/Register";
+import Search from "./pages/Search";
+import Notis from "./pages/Notis";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
+import Followed from "./pages/Followed";
+import Template from "./Template";
 
 import { fetchVerify } from "./libs/fetcher";
 
@@ -33,6 +46,10 @@ const router = createBrowserRouter([
 			{
 				path: "/",
 				element: <Home />,
+			},
+			{
+				path: "/followed",
+				element: <Followed />,
 			},
 			{
 				path: "/login",
@@ -54,6 +71,30 @@ const router = createBrowserRouter([
 				path: "/new",
 				element: <NewPost />,
 			},
+			{
+				path: "/profile/:id",
+				element: <Profile />,
+			},
+			{
+				path: "/edit/user",
+				element: <Edit />,
+			},
+			{
+				path: "/search",
+				element: <Search />,
+			},
+			{
+				path: "/notis",
+				element: <Notis />,
+			},
+			{
+				path: "/followers/:id",
+				element: <Followers />,
+			},
+			{
+				path: "/following/:id",
+				element: <Following />,
+			},
 		],
 	},
 ]);
@@ -64,9 +105,9 @@ export default function ThemedApp() {
 	const [toast, setToast] = useState(null);
 	const [auth, setAuth] = useState(false);
 
-    useEffect(() => {
-        fetchVerify().then(user => setAuth(user));
-    }, []);
+	useEffect(() => {
+		fetchVerify().then(user => setAuth(user));
+	}, []);
 
 	const theme = useMemo(() => {
 		return createTheme({
