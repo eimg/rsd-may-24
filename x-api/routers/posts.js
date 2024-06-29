@@ -147,7 +147,9 @@ router.post("/comment/:origin", auth, async function (req, res) {
 	};
 
 	const result = await db.collection("posts").insertOne(comment);
-	res.status(201).json({ _id: result.insertedId, ...comment });
+    const data = await getPost(result.insertedId);
+
+	res.status(201).json(data);
 });
 
 router.get("/:id", async function (req, res) {
