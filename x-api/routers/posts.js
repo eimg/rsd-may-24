@@ -72,6 +72,81 @@ router.get("/", async (req, res) => {
 	return res.json(posts);
 });
 
+router.get("/followed", auth, async (req, res) => {
+    const user = res.locals.user;
+
+    const followed = user.following.map(id => {
+        return new ObjectId(id);
+    });
+
+	const posts = await db
+		.collection("posts")
+		.aggregate([
+			{
+				$match: {
+					type: "post",
+				},
+			},
+			{
+				$match: {
+					owner: {
+						$in: followed,
+					},
+				},
+			},
+			{
+				$sort: {
+					created: -1,
+				},
+			},
+			{
+				$limit: 10,
+			},
+			{
+				$lookup: {
+					from: "posts",
+					localField: "_id",
+					foreignField: "origin",
+					as: "comments",
+					pipeline: [
+						{
+							$lookup: {
+								from: "users",
+								localField: "owner",
+								foreignField: "_id",
+								as: "owner",
+							},
+						},
+						{
+							$unwind: "$owner",
+						},
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: "users",
+					localField: "owner",
+					foreignField: "_id",
+					as: "owner",
+				},
+			},
+			{
+				$lookup: {
+					from: "users",
+					localField: "likes",
+					foreignField: "_id",
+					as: "likes",
+				},
+			},
+			{
+				$unwind: "$owner",
+			},
+		])
+		.toArray();
+	return res.json(posts);
+});
+
 router.put("/like/:id", auth, async (req, res) => {
 	const { id } = req.params;
 	const user = res.locals.user;

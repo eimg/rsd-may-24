@@ -28,6 +28,8 @@ export default function AppDrawer() {
 	const { drawer, setDrawer, auth, setAuth } = useApp();
     const navigate = useNavigate();
 
+    const images = import.meta.env.VITE_IMAGES_URL;
+
 	const DrawerList = (
 		<Box
 			sx={{ width: 300 }}
@@ -111,6 +113,7 @@ export default function AppDrawer() {
 								gap: 1,
 							}}>
 							<Avatar
+								src={`${images}/${auth.photo}`}
 								sx={{
 									width: 100,
 									height: 100,

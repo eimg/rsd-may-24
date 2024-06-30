@@ -43,6 +43,21 @@ export async function getPosts() {
 	return false;
 }
 
+export async function getFollowed() {
+    const token = localStorage.getItem("token");
+	const res = await fetch(`${api}/posts/followed`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+	if (res.ok) {
+		return await res.json();
+	}
+
+	return false;
+}
+
 export async function postRegister(data) {
 	const res = await fetch(`${api}/users/register`, {
 		method: "POST",

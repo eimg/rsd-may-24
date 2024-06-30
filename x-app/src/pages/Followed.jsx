@@ -2,7 +2,7 @@ import { Box, Typography, Button } from "@mui/material";
 
 import PostCard from "../components/PostCard";
 
-import { getPosts, putLike, putUnlike } from "../libs/fetcher";
+import { getFollowed, putLike, putUnlike } from "../libs/fetcher";
 import { useEffect, useState } from "react";
 import { useApp } from "../ThemedApp";
 import { grey } from "@mui/material/colors";
@@ -42,7 +42,7 @@ export default function Followed() {
 
 	useEffect(() => {
 		(async () => {
-			const data = await getPosts();
+			const data = await getFollowed();
 			if (!data) console.log("Fetch error");
 
 			setPosts(data);
