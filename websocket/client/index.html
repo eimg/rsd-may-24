@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <ul id="list"></ul>
+    <form>
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="msg" placeholder="Msg">
+        <button>Send</button>
+    </form>
+    <script>
+        const ws = new WebSocket("ws://localhost:4000/chat");
+
+        document.querySelector("form").onsubmit = e => {
+            e.preventDefault();
+            const name = document.querySelector("#name").value;
+            const msg = document.querySelector("#msg").value;
+
+            if(msg) ws.send(JSON.stringify({name, msg}));
+
+            document.querySelector("#msg").value = "";
+            document.querySelector("#msg").focus();
+        }
+
+        ws.addEventListener("message", e => {
+            createItem(e.data);
+        });
+
+        ws.addEventListener("open", () => {
+            console.log("Web Socket connected.");
+        });
+
+        function createItem(data) {
+            const { name, msg } = JSON.parse(data);
+            const li = document.createElement("li");
+            li.innerHTML = `<b>${name}</b>: ${msg}`;
+            document.querySelector("#list").appendChild(li);
+        }
+    </script>
+</body>
+</html>

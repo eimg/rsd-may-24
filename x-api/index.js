@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
+require("express-ws")(app);
+
 const cors = require("cors");
 app.use(cors());
 
@@ -16,8 +18,18 @@ app.use('/users', usersRouter);
 const { postsRouter } = require("./routers/posts");
 app.use("/posts", postsRouter);
 
+const { notiRouter } = require("./routers/notis");
+app.use("/notis", notiRouter);
+
+const clients = [];
+app.ws("/subscribe", (ws, req) => {
+    clients.push(ws);
+});
+
 app.use("/images", express.static(process.env.IMAGES_PATH));
 
 app.listen(process.env.PORT, () => {
     console.log(`X Api running at ${process.env.PORT}...`);
 });
+
+module.exports = { clients };

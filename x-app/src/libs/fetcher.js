@@ -214,3 +214,26 @@ export async function fetchSearch(q) {
 
 	return await res.json();
 }
+
+export async function fetchNotis() {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${api}/notis`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+
+    return await res.json();
+}
+
+export async function putNotiRead(id) {
+    const token = localStorage.getItem("token");
+	const res = await fetch(`${api}/notis/${id}`, {
+        method: 'PUT',
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	return await res.json();
+}

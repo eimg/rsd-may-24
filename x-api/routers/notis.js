@@ -8,7 +8,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 const { MongoClient, ObjectId } = require("mongodb");
-const mongo = new MongoClient(process.env.MONGO_URI);
+const mongo = new MongoClient(process.env.MONGO);
 
 const db = mongo.db("x");
 

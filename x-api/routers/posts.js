@@ -9,6 +9,7 @@ const mongo = new MongoClient(process.env.MONGO);
 const db = mongo.db("x");
 
 const { auth } = require("./users");
+const { clients } = require("../index");
 
 router.get("/", async (req, res) => {
 	const posts = await db
@@ -164,6 +165,20 @@ router.put("/like/:id", auth, async (req, res) => {
 		}
 	);
 
+    await db.collection("notis").insertOne({
+		type: "like",
+		actor: new ObjectId(user._id),
+		msg: `likes your post.`,
+		target: post._id,
+		owner: post.owner,
+		read: false,
+		created: new Date(),
+	});
+
+    clients.map(client => {
+		client.send("noti count");
+	});
+
 	return res.json(update);
 });
 
@@ -223,6 +238,20 @@ router.post("/comment/:origin", auth, async function (req, res) {
 
 	const result = await db.collection("posts").insertOne(comment);
     const data = await getPost(result.insertedId);
+
+    const originPost = await db
+		.collection("posts")
+		.findOne({ _id: new ObjectId(origin) });
+
+    await db.collection("notis").insertOne({
+		type: "comment",
+		actor: new ObjectId(user._id),
+		msg: `comment your post.`,
+		target: new ObjectId(origin),
+		owner: originPost.owner,
+		read: false,
+		created: new Date(),
+	});
 
 	res.status(201).json(data);
 });

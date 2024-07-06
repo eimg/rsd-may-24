@@ -10,6 +10,7 @@ import {
     useContext, 
     useEffect, 
     useMemo, 
+    useRef, 
     useState, 
 } from "react";
 
@@ -32,7 +33,7 @@ import Following from "./pages/Following";
 import Followed from "./pages/Followed";
 import Template from "./Template";
 
-import { fetchVerify } from "./libs/fetcher";
+import { fetchNotis, fetchVerify } from "./libs/fetcher";
 
 export function useApp() {
 	return useContext(AppContext);
@@ -104,9 +105,29 @@ export default function ThemedApp() {
 	const [drawer, setDrawer] = useState(false);
 	const [toast, setToast] = useState(null);
 	const [auth, setAuth] = useState(false);
+    const [notiCount, setNotiCount] = useState(0);
+
+    const ws = useRef();
 
 	useEffect(() => {
+        if(!ws.current) {
+            ws.current = new WebSocket("ws://localhost:8080/subscribe");
+            ws.current.addEventListener("message", data => {
+				//
+			});
+        }
+
 		fetchVerify().then(user => setAuth(user));
+        
+        fetchNotis().then(data =>
+			setNotiCount(data.filter(noti => !noti.read).length)
+		);
+
+        return () => {
+            if(ws.current) {
+                // ws.current.close();
+            }
+        };
 	}, []);
 
 	const theme = useMemo(() => {
@@ -129,6 +150,9 @@ export default function ThemedApp() {
 					setAuth,
 					toast,
 					setToast,
+                    notiCount,
+                    setNotiCount,
+                    ws,
 				}}>
 				<Snackbar
 					anchorOrigin={{ vertical: "top", horizontal: "right" }}

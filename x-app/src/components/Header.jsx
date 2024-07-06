@@ -21,7 +21,7 @@ import { useApp } from "../ThemedApp";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
-	const { mode, setMode, setDrawer } = useApp();
+	const { mode, setMode, setDrawer, notiCount } = useApp();
 
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
@@ -62,7 +62,7 @@ export default function Header() {
 						color="inherit"
 						onClick={() => navigate("/notis")}>
 						<Badge
-							badgeContent={10}
+							badgeContent={notiCount}
 							color="error">
 							<NotiIcon />
 						</Badge>
