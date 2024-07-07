@@ -9,7 +9,7 @@ const mongo = new MongoClient(process.env.MONGO);
 const db = mongo.db("x");
 
 const { auth } = require("./users");
-const { clients } = require("../index");
+const { clients } = require("./ws");
 
 router.get("/", async (req, res) => {
 	const posts = await db
@@ -74,11 +74,11 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/followed", auth, async (req, res) => {
-    const user = res.locals.user;
+	const user = res.locals.user;
 
-    const followed = user.following.map(id => {
-        return new ObjectId(id);
-    });
+	const followed = user.following.map(id => {
+		return new ObjectId(id);
+	});
 
 	const posts = await db
 		.collection("posts")
@@ -165,7 +165,7 @@ router.put("/like/:id", auth, async (req, res) => {
 		}
 	);
 
-    await db.collection("notis").insertOne({
+	await db.collection("notis").insertOne({
 		type: "like",
 		actor: new ObjectId(user._id),
 		msg: `likes your post.`,
@@ -175,8 +175,20 @@ router.put("/like/:id", auth, async (req, res) => {
 		created: new Date(),
 	});
 
-    clients.map(client => {
-		client.send("noti count");
+	const notiCount = await db
+		.collection("notis")
+		.find({
+			owner: post.owner,
+		})
+		.toArray();
+
+	clients.map(client => {
+		if (client._id == post.owner.toString()) {
+			client.send(
+				JSON.stringify({ type: "notis", count: notiCount.length })
+			);
+			console.log(`noti count sent to ${post.owner.toString()}`);
+		}
 	});
 
 	return res.json(update);
@@ -191,8 +203,8 @@ router.put("/unlike/:id", auth, async (req, res) => {
 		.findOne({ _id: new ObjectId(id) });
 
 	const likes = post.likes.filter(like => {
-        return like.toString() !== user._id;
-    });
+		return like.toString() !== user._id;
+	});
 
 	const update = await db.collection("posts").updateOne(
 		{ _id: new ObjectId(id) },
@@ -219,6 +231,10 @@ router.post("/", auth, async function (req, res) {
 	const result = await db.collection("posts").insertOne(post);
 	const resultPost = await getPost(result.insertedId);
 
+    // clients.map(client => {
+	// 	client.send(JSON.stringify({ type: "post", post: resultPost }));
+	// });
+
 	res.status(201).json(resultPost);
 });
 
@@ -237,13 +253,13 @@ router.post("/comment/:origin", auth, async function (req, res) {
 	};
 
 	const result = await db.collection("posts").insertOne(comment);
-    const data = await getPost(result.insertedId);
+	const data = await getPost(result.insertedId);
 
-    const originPost = await db
+	const originPost = await db
 		.collection("posts")
 		.findOne({ _id: new ObjectId(origin) });
 
-    await db.collection("notis").insertOne({
+	await db.collection("notis").insertOne({
 		type: "comment",
 		actor: new ObjectId(user._id),
 		msg: `comment your post.`,

@@ -56,7 +56,10 @@ export default function AppDrawer() {
 							</ListItemButton>
 						</ListItem>
 						<ListItem disablePadding>
-							<ListItemButton onClick={() => setAuth(false)}>
+							<ListItemButton onClick={() => {
+                                setAuth(false);
+                                localStorage.removeItem("token");
+                            }}>
 								<ListItemIcon>
 									<LogoutIcon color="error" />
 								</ListItemIcon>

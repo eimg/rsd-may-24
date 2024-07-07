@@ -5,13 +5,13 @@ import {
 	ThemeProvider,
 } from "@mui/material";
 
-import { 
-    createContext, 
-    useContext, 
-    useEffect, 
-    useMemo, 
-    useRef, 
-    useState, 
+import {
+	createContext,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
 } from "react";
 
 const AppContext = createContext();
@@ -34,6 +34,7 @@ import Followed from "./pages/Followed";
 import Template from "./Template";
 
 import { fetchNotis, fetchVerify } from "./libs/fetcher";
+import useWebSocket from "./libs/webSocketClient";
 
 export function useApp() {
 	return useContext(AppContext);
@@ -105,29 +106,22 @@ export default function ThemedApp() {
 	const [drawer, setDrawer] = useState(false);
 	const [toast, setToast] = useState(null);
 	const [auth, setAuth] = useState(false);
-    const [notiCount, setNotiCount] = useState(0);
-
-    const ws = useRef();
+	const [notiCount, setNotiCount] = useState(0);
 
 	useEffect(() => {
-        if(!ws.current) {
-            ws.current = new WebSocket("ws://localhost:8080/subscribe");
-            ws.current.addEventListener("message", data => {
-				//
-			});
-        }
+		const ws = useWebSocket();
+		ws.addEventListener("message", e => {
+			const msg = JSON.parse(e.data);
+			if (msg.type === "notis") {
+				setNotiCount(msg.count);
+			}
+		});
 
 		fetchVerify().then(user => setAuth(user));
-        
-        fetchNotis().then(data =>
+
+		fetchNotis().then(data =>
 			setNotiCount(data.filter(noti => !noti.read).length)
 		);
-
-        return () => {
-            if(ws.current) {
-                // ws.current.close();
-            }
-        };
 	}, []);
 
 	const theme = useMemo(() => {
@@ -150,9 +144,8 @@ export default function ThemedApp() {
 					setAuth,
 					toast,
 					setToast,
-                    notiCount,
-                    setNotiCount,
-                    ws,
+					notiCount,
+					setNotiCount,
 				}}>
 				<Snackbar
 					anchorOrigin={{ vertical: "top", horizontal: "right" }}

@@ -3,14 +3,17 @@ import { Box, Typography, Button } from "@mui/material";
 import PostCard from "../components/PostCard";
 
 import { getPosts, putLike, putUnlike } from "../libs/fetcher";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../ThemedApp";
 import { grey } from "@mui/material/colors";
 import { useNavigate } from "react-router-dom";
+import useWebSocket from "../libs/webSocketClient";
 
 export default function Home() {
 	const [posts, setPosts] = useState([]);
 	const { auth } = useApp();
+
+	const ws = useRef();
 
 	const navigate = useNavigate();
 
@@ -46,6 +49,14 @@ export default function Home() {
 			if (!data) console.log("Fetch error");
 
 			setPosts(data);
+
+			// const ws = useWebSocket();
+			// ws.addEventListener("message", e => {
+			// 	const msg = JSON.parse(e.data);
+			// 	if (msg.type == "post") {
+			// 		setPosts([msg.post, ...data]);
+			// 	}
+			// });
 		})();
 	}, []);
 
