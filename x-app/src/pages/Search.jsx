@@ -48,7 +48,7 @@ export default function Search() {
                     
                     if(user.photo) {
                         photo = `${images}/${user.photo}`;
-                    };
+                    }
 
 					return (
 						<ListItem key={user._id}>

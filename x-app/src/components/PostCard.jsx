@@ -82,7 +82,7 @@ export default function PostCard({ post, primary, like, unlike }) {
 					<ButtonGroup>
 						{isLiked() ? (
 							<IconButton
-								onClick={e => {
+								onClick={() => {
 									unlike(post._id);
 								}}>
 								<LikedIcon color="error" />

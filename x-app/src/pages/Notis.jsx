@@ -34,7 +34,7 @@ export default function Notis() {
 
 			setNotiCount(data.filter(noti => !noti.read).length);
 		});
-	}, []);
+	}, [setNotiCount]);
 
 	const readNoti = id => {
 		putNotiRead(id);

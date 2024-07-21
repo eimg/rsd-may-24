@@ -10,7 +10,6 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
-	useRef,
 	useState,
 } from "react";
 
@@ -108,8 +107,9 @@ export default function ThemedApp() {
 	const [auth, setAuth] = useState(false);
 	const [notiCount, setNotiCount] = useState(0);
 
+    const ws = useWebSocket();
+    
 	useEffect(() => {
-		const ws = useWebSocket();
 		ws.addEventListener("message", e => {
 			const msg = JSON.parse(e.data);
 			if (msg.type === "notis") {

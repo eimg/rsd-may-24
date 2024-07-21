@@ -6,7 +6,7 @@ import UserList from "../components/UserList";
 import { fetchFollowers } from "../libs/fetcher";
 import { useParams } from "react-router-dom";
 
-export default function () {
+export default function Followers () {
 	const { id } = useParams();
 
 	const [users, setUsers] = useState([]);
